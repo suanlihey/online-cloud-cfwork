@@ -729,10 +729,10 @@ const worker = {
       }
       
       // 生成一个临时的、一次性的访问令牌
-      const authToken = await utils.hash(shareId + env.JWT_SECRET);
+      const secret = env.JWT_SECRET;
+      if (!secret) return new Response(JSON.stringify({ ok: false, error: "JWT_SECRET 未配置" }), { status: 500 });
+      const authToken = await utils.hash(shareId + secret);
       return new Response(JSON.stringify({ ok: true, authToken }), { status: 200, headers: { 'Content-Type': 'application/json' } });
-    } catch (e) {
-      return new Response(JSON.stringify({ ok: false, error: "验证失败: " + e.message }), { status: 500, headers: { 'Content-Type': 'application/json' } });
     }
   },
 
@@ -2252,5 +2252,6 @@ export {
   worker as default
 };
 //# sourceMappingURL=index.js.map
+
 
 
