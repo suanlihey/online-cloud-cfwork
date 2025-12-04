@@ -397,7 +397,7 @@ const worker = {
           const token = url.searchParams.get("token") || request.headers.get('X-Auth-Token');
           if (!token) return new Response(JSON.stringify({ ok: false, error: "Token required" }), { status: 401, headers: { 'Content-Type': 'application/json' } });
           
-          const payload = await utils.jwt.verify(token, globalThis.JWT_SECRET);
+          const payload = await utils.jwt.verify(token, env.JWT_SECRET);
           if (!payload || !payload.userId) return new Response(JSON.stringify({ ok: false, error: "Invalid or expired token" }), { status: 401, headers: { 'Content-Type': 'application/json' } });
           
           // 将 payload 附加到请求中，方便后续处理
@@ -440,7 +440,7 @@ const worker = {
       if (!token) {
           return new Response(JSON.stringify({ ok: false, error: "Unauthorized: Missing token" }), { status: 401, headers: { 'Content-Type': 'application/json' } });
       }
-      const payload = await utils.jwt.verify(token, globalThis.JWT_SECRET);
+      const payload = await utils.jwt.verify(token, env.JWT_SECRET);
       if (!payload) return new Response(JSON.stringify({ ok: false, error: "Unauthorized: Invalid or expired token" }), { status: 401, headers: { 'Content-Type': 'application/json' } });
       request.payload = payload; // 附加用户信息
 
@@ -474,7 +474,7 @@ const worker = {
       if (!userDataStr) return new Response(JSON.stringify({ ok: false, error: "用户不存在" }), { status: 404, headers: { 'Content-Type': 'application/json' } });
       const { userId, hashedPassword } = JSON.parse(userDataStr);
       if (hashedPassword !== await utils.hash(password)) return new Response(JSON.stringify({ ok: false, error: "密码错误" }), { status: 401, headers: { 'Content-Type': 'application/json' } });
-      const token = await utils.jwt.encode({ userId, username }, globalThis.JWT_SECRET);
+      const token = await utils.jwt.encode({ userId, username }, env.JWT_SECRET);
       return new Response(JSON.stringify({ ok: true, token, username }), { status: 200, headers: { 'Content-Type': 'application/json' } });
     } catch (e) {
       return new Response(JSON.stringify({ ok: false, error: "登录失败: " + e.message }), { status: 500, headers: { 'Content-Type': 'application/json' } });
@@ -681,7 +681,7 @@ const worker = {
       // 如果有密码，验证临时token
       if (shareData.passwordHash) {
           if (!authToken) return new Response(JSON.stringify({ ok: false, error: "需要授权" }), { status: 401, headers: { 'Content-Type': 'application/json' } });
-          const expectedToken = await utils.hash(shareId + globalThis.JWT_SECRET);
+          const expectedToken = await utils.hash(shareId + env.JWT_SECRET);
           if (authToken !== expectedToken) {
               return new Response(JSON.stringify({ ok: false, error: "授权无效" }), { status: 403, headers: { 'Content-Type': 'application/json' } });
           }
@@ -729,7 +729,7 @@ const worker = {
       }
       
       // 生成一个临时的、一次性的访问令牌
-      const authToken = await utils.hash(shareId + globalThis.JWT_SECRET);
+      const authToken = await utils.hash(shareId + env.JWT_SECRET);
       return new Response(JSON.stringify({ ok: true, authToken }), { status: 200, headers: { 'Content-Type': 'application/json' } });
     } catch (e) {
       return new Response(JSON.stringify({ ok: false, error: "验证失败: " + e.message }), { status: 500, headers: { 'Content-Type': 'application/json' } });
@@ -2252,4 +2252,5 @@ export {
   worker as default
 };
 //# sourceMappingURL=index.js.map
+
 
