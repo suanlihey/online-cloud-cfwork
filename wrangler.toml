@@ -1,4 +1,8 @@
 # wrangler.toml
+
+[[vars]]
+JWT_SECRET = "v9F3dR7xQpL8tNzC2mWbYkHjAeSsXfUv"
+
 # !!! 重要：请将下面的 name 修改为一个全新的、从未使用过的名字 !!!
 name = "online-clouddisk-cfwork-2025" 
 main = "src/index.js"
@@ -17,6 +21,7 @@ class_name = "StatsAggregator"
 [[migrations]]
 tag = "v2"
 new_sqlite_classes = ["UserSpace", "StatsAggregator"]
+
 
 
 
